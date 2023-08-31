@@ -11,6 +11,7 @@
     "start": "node dist/index.js"
   },
   "dependencies": {
-    "@bandprotocol/bandchain.js": "^2.2.0"
+    "@bandprotocol/bandchain.js": "^2.2.0",
+    "dotenv": "^16.3.1"
   }
 }
