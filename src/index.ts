@@ -1,5 +1,6 @@
 import {Client, Wallet} from '@bandprotocol/bandchain.js';
 import dotenv from 'dotenv';
+import {faucetAddress} from './utils';
 dotenv.config();
 
 const gpcUrl = process.env.LOCAL_GRPC_URL || '';
@@ -16,8 +17,10 @@ const sender = pubKey.toAddress().toAccBech32();
 
 
 async function makeRequest() {
+  await faucetAddress(sender, '1000000');
   console.log(`address is ${sender}`);
-  console.log(`balance is ${await client.getAllBalances(sender)}`);
+  const balance =  await client.getAllBalances(sender);
+  console.log(`balance is`, balance);
 }
 
 (async () => {

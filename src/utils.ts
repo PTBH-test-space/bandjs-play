@@ -1,6 +1,10 @@
 import {Client, Coin, Fee, Message, Transaction, Wallet} from "@bandprotocol/bandchain.js";
 import fs from "fs";
 import path from "path";
+import { execSync } from 'child_process';
+import dotenv from "dotenv";
+dotenv.config();
+
 export async function buildTransaction(
   client: Client,
   msg: Message.BaseMsg,
@@ -77,4 +81,24 @@ export async function executeTxn(
   const txRawBytes = txn.getTxData(signature, pubKey);
   const sendTx = await client.sendTxBlockMode(txRawBytes);
   return sendTx;
+}
+
+export function getRequesterAccount(): { privateKey: Wallet.PrivateKey, publicKey: Wallet.PublicKey, address: string } {
+  const privateKey = Wallet.PrivateKey.fromMnemonic(
+    process.env.REQUESTER_MNEMONIC || '',
+  );
+  const publicKey = privateKey.toPubkey();
+  const address = publicKey.toAddress().toAccBech32();
+  return { privateKey, publicKey, address}
+}
+
+export async function faucetAddress(address: string, amount: string) {
+  execSync(`bandd tx bank send requester ${address} ${amount}uband --keyring-backend test --node tcp://0.0.0.0:36657 --chain-id bandchain -y`);
+  await sleep(3000);
+}
+
+
+
+async function sleep(time: number) {
+  return new Promise(resolve => setTimeout(resolve, time));
 }
